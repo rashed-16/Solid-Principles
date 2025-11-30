@@ -1,46 +1,24 @@
 using System;
+using SolidPaymentSystem;
 
-namespace SOLID_Calculator
+namespace PaymentApp
 {
-    // ================================
-    // Program Entry Point
-    // Uses Strategy Pattern to select operation at runtime.
-    // ================================
     class Program
     {
         static void Main()
         {
-            Console.WriteLine("Enter first number:");
-            double a = double.Parse(Console.ReadLine());
+            // Creating the processor
+            PaymentProcessor processor = new PaymentProcessor();
 
-            Console.WriteLine("Enter second number:");
-            double b = double.Parse(Console.ReadLine());
+            // LSP: Both classes are used through the PaymentMethod abstraction
+            PaymentMethod creditCard = new CreditCardPayment();
+            PaymentMethod paypal = new PayPalPayment();
 
-            Console.WriteLine("\nChoose operation: add / sub / mul / div / pow");
-            string op = Console.ReadLine().Trim().ToLower();
+            // Execute credit card payment
+            processor.Process(creditCard, 150.00);
 
-            // Choosing the strategy (operation)
-            IOperation selectedOperation = op switch
-            {
-                "add" => new AddOperation(),
-                "sub" => new SubtractOperation(),
-                "mul" => new MultiplyOperation(),
-                "div" => new DivideOperation(),
-                "pow" => new PowerOperation(),
-                _ => null
-            };
-
-            if (selectedOperation == null)
-            {
-                Console.WriteLine("Invalid operation selected.");
-                return;
-            }
-
-            // Passing the selected operation to the calculator (Dependency Injection)
-            SolidCalculator calculator = new SolidCalculator(selectedOperation);
-
-            double result = calculator.Calculate(a, b);
-            Console.WriteLine($"\nResult = {result}");
+            // Execute PayPal payment
+            processor.Process(paypal, 89.99);
         }
     }
 }
